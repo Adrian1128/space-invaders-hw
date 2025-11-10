@@ -4,4 +4,4 @@
 # more
 .vscode/
 target/
-
+*.aseprite
