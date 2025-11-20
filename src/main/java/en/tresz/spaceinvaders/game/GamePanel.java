@@ -13,7 +13,7 @@ public class GamePanel extends JPanel {
 
     private MainWindow gameWindow;
     private String currentDifficulty;
-
+    
     public GamePanel(MainWindow gw) {
         this.gameWindow = gw;
         initUI();

@@ -7,6 +7,7 @@ import en.tresz.spaceinvaders.menu.ScoreboardPanel;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import java.awt.CardLayout;
 
@@ -30,10 +31,10 @@ public class MainWindow extends JFrame {
     private GamePanel gamePanel;
 
     public MainWindow() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // sonarlint suggested WindowConstants
         setTitle("Space Invaders");
         setSize(400, 800);
-        setResizable(false);
+        setResizable(true);
         setLocationRelativeTo(null);
 
         // setting layout

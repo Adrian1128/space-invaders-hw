@@ -1,6 +1,7 @@
 package en.tresz.spaceinvaders.menu;
 
 import en.tresz.spaceinvaders.MainWindow;
+import en.tresz.spaceinvaders.util.ButtonMaker;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -41,7 +42,7 @@ public class ScoreboardPanel extends JPanel {
         add(new JScrollPane(scoreArea), BorderLayout.CENTER);
 
         // creating buttons
-        JButton backButton = new JButton("Back");
+        JButton backButton = ButtonMaker.buttonSetup("Back", 180, 68);
         backButton.addActionListener(new BackButtonActionListener());
         add(backButton, BorderLayout.SOUTH);
     }
