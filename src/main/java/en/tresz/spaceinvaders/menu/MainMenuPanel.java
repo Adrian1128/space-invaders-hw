@@ -16,10 +16,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.awt.image.BufferedImage;
 
 public class MainMenuPanel extends JPanel {
     private MainWindow gameWindow;
@@ -27,11 +27,11 @@ public class MainMenuPanel extends JPanel {
     private static final int BUTTON_WIDTH = 135;
     private static final int BUTTON_HEIGHT = 51;
 
-    private transient Image backgroundImage; // sonarlint suggestion (transient)
+    private transient BufferedImage backgroundImage; // sonarlint suggestion (transient)
 
     public MainMenuPanel(MainWindow gw) {
         gameWindow = gw;
-        backgroundImage = ImageLoader.loadIcon("/images/menu-background.png").getImage();
+        backgroundImage = ImageLoader.loadBufferedImage("/images/menu-background.png");
 
         initUI();
     }
@@ -84,7 +84,7 @@ public class MainMenuPanel extends JPanel {
     private class PlayButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.DIFFICULTY_PANEL);
+            gameWindow.showPanel(MainWindow.PanelType.DIFFICULTY.name());
         }
     }
 
@@ -94,7 +94,7 @@ public class MainMenuPanel extends JPanel {
     private class ScoreboardButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.SCOREBOARD_PANEL);
+            gameWindow.showPanel(MainWindow.PanelType.SCOREBOARD.name());
         }
     }
 
@@ -106,7 +106,7 @@ public class MainMenuPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
 
             JPanel panel = new JPanel(new BorderLayout(10, 10));
-            panel.add(new JLabel(ImageLoader.loadScaledIcon("/images/exiticon.png", 32, 32)), BorderLayout.WEST);
+            panel.add(new JLabel(ImageLoader.scaledIcon("/images/exiticon.png", 32, 32)), BorderLayout.WEST);
 
             JLabel text = new JLabel("Are you sure you want to exit?");
             panel.add(text, BorderLayout.CENTER);

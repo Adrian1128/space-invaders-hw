@@ -25,12 +25,12 @@ public class ButtonMaker {
     public static JButton buttonSetup(String name, int width, int height) {
         JButton button = new JButton();
 
-        ImageIcon playNormalIcon = ImageLoader.loadScaledIcon("/images/" + name + "-button.png", width, height);
-        ImageIcon playHoverIcon = ImageLoader.loadScaledIcon("/images/" + name + "-button-selected.png",
+        ImageIcon playNormalIcon = ImageLoader.scaledIcon("/images/" + name + "-button.png", width, height);
+        ImageIcon playHoverIcon = ImageLoader.scaledIcon("/images/" + name + "-button-selected.png",
                 width, height);
-        ImageIcon playPressedIcon = ImageLoader.loadScaledIcon("/images/" + name + "-button-pressed.png",
+        ImageIcon playPressedIcon = ImageLoader.scaledIcon("/images/" + name + "-button-pressed.png",
                 width, height);
-
+        
         button.setIcon(playNormalIcon);
         button.setRolloverIcon(playHoverIcon);
         button.setPressedIcon(playPressedIcon);

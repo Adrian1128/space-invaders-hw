@@ -13,7 +13,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.Graphics;
 
 /**
@@ -21,17 +21,17 @@ import java.awt.Graphics;
  * Shows options for Easy, Medium, Hard, and a Back button.
  */
 public class DifficultyMenuPanel extends JPanel {
-
+    
     private MainWindow gameWindow;
 
     private static final int BUTTON_WIDTH = 135;
     private static final int BUTTON_HEIGHT = 51;
 
-    private transient Image backgroundImage; // sonarlint suggestion (transient)
+    private transient BufferedImage backgroundImage; // sonarlint suggestion (transient)
 
     public DifficultyMenuPanel(MainWindow gw) {
         this.gameWindow = gw;
-        backgroundImage = ImageLoader.loadIcon("/images/menu-background.png").getImage();
+        backgroundImage = ImageLoader.loadBufferedImage("/images/menu-background.png");
 
         initUI();
     }
@@ -68,7 +68,7 @@ public class DifficultyMenuPanel extends JPanel {
         add(backButton, gbc);
 
     }
-    
+
     /**
      * Paints the background image scaled to fit the panel.
      */
@@ -117,7 +117,7 @@ public class DifficultyMenuPanel extends JPanel {
     private class BackButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.MENU_PANEL);
+            gameWindow.showPanel(MainWindow.PanelType.MENU.name());
         }
     }
 }

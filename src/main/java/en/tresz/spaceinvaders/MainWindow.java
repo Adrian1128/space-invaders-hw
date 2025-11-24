@@ -15,11 +15,18 @@ import java.awt.CardLayout;
  * The main frame.
  */
 public class MainWindow extends JFrame {
-    // constants for the panels
-    public static final String MENU_PANEL = "MENU";
-    public static final String DIFFICULTY_PANEL = "DIFFICULTY";
-    public static final String SCOREBOARD_PANEL = "SCOREBOARD";
-    public static final String GAME_PANEL = "GAME";
+    // enum for the panels
+    public enum PanelType {
+        MENU,
+        DIFFICULTY,
+        SCOREBOARD,
+        GAME
+
+    }
+
+    // window size constants
+    public static final int WINDOW_WIDTH = 400;
+    public static final int WINDOW_HEIGHT = 800;
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
@@ -33,8 +40,8 @@ public class MainWindow extends JFrame {
     public MainWindow() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // sonarlint suggested WindowConstants
         setTitle("Space Invaders");
-        setSize(400, 800);
-        setResizable(true);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        setResizable(false);
         setLocationRelativeTo(null);
 
         // setting layout
@@ -48,15 +55,15 @@ public class MainWindow extends JFrame {
         gamePanel = new GamePanel(this);
 
         // adding panels to main frame
-        mainPanel.add(mainMenuPanel, MENU_PANEL);
-        mainPanel.add(difficultyMenuPanel, DIFFICULTY_PANEL);
-        mainPanel.add(scoreboardPanel, SCOREBOARD_PANEL);
-        mainPanel.add(gamePanel, GAME_PANEL);
+        mainPanel.add(mainMenuPanel, PanelType.MENU.name());
+        mainPanel.add(difficultyMenuPanel, PanelType.DIFFICULTY.name());
+        mainPanel.add(scoreboardPanel, PanelType.SCOREBOARD.name());
+        mainPanel.add(gamePanel, PanelType.GAME.name());
 
         this.add(mainPanel);
 
         // the default panel is the main menu
-        showPanel(MENU_PANEL);
+        showPanel(PanelType.MENU.name());
     }
 
     /**
@@ -75,6 +82,7 @@ public class MainWindow extends JFrame {
      */
     public void startGame(String difficulty) {
         gamePanel.startGame(difficulty);
-        showPanel(GAME_PANEL);
+        showPanel(PanelType.GAME.name());
     }
+
 }

@@ -3,9 +3,6 @@ package en.tresz.spaceinvaders.util;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -18,25 +15,52 @@ public class ImageLoader {
         // private constructor
     }
 
-    /**
-     * Loads an image from the resources and returns an ImageIcon
-     *
-     * @param path resource path
-     * @return ImageIcon or null if resource missing
-     */
-    public static ImageIcon loadIcon(String path) {
-        URL iconUrl = ImageLoader.class.getResource(path);
+    public static BufferedImage loadBufferedImage(String path) {
+        URL imgUrl = ImageLoader.class.getResource(path);
 
-        if (iconUrl == null) {
-            System.err.println("Could not find icon: " + path);
+        if (imgUrl == null) {
+            System.err.println("Could not find image: " + path);
             return null;
         }
 
-        return new ImageIcon(iconUrl);
+        try {
+            return ImageIO.read(imgUrl);
+        } catch (IOException e) {
+            System.err.println("Failed to read image: " + path + " -> " + e.getMessage());
+            return null;
+        }
     }
 
-    /**!!!
-     * Loads an image from the resources and returns a scaled ImageIcon using
+    /**
+     * !!!
+     * Scales a BufferedImage to the given size using nearest-neighbor scaling.
+     * 
+     * @param img    the source image
+     * @param width  the target width
+     * @param height the target height
+     * @return the scaled image
+     */
+    public static BufferedImage scaledBufferedImageNearest(BufferedImage img, int width, int height) {
+        if (img == null) {
+            System.err.println("Image not found, cannot scale it.");
+            return null;
+        }
+
+        BufferedImage scaled = new BufferedImage(width, height, img.getType());
+
+        for (int y = 0; y < height; y++) {
+            int srcY = y * img.getHeight() / height;
+            for (int x = 0; x < width; x++) {
+                int srcX = x * img.getWidth() / width;
+                scaled.setRGB(x, y, img.getRGB(srcX, srcY));
+            }
+        }
+
+        return scaled;
+    }
+
+    /**
+     * Loads a BufferedImage from the resources and returns a scaled ImageIcon using
      * nearest-neighbor scaling
      *
      * @param path   resource path
@@ -44,7 +68,7 @@ public class ImageLoader {
      * @param height target height in pixels
      * @return scaled ImageIcon or null if resource missing
      */
-    public static ImageIcon loadScaledIcon(String path, int width, int height) {
+    public static ImageIcon scaledIcon(String path, int width, int height) {
         URL iconUrl = ImageLoader.class.getResource(path);
 
         if (iconUrl == null) {
@@ -54,11 +78,7 @@ public class ImageLoader {
 
         try {
             BufferedImage img = ImageIO.read(iconUrl);
-            if (img == null) {
-                return new ImageIcon(iconUrl);
-            }
-
-            Image scaled = scaleImageNearest(img, width, height);
+            BufferedImage scaled = scaledBufferedImageNearest(img, width, height);
             return new ImageIcon(scaled);
         } catch (IOException e) {
             System.err.println("Failed to read image: " + path + " -> " + e.getMessage());
@@ -66,20 +86,4 @@ public class ImageLoader {
         }
     }
 
-    /**!!!
-     * Scales an Image to the given size using nearest-neighbor scaling.
-     * 
-     * @param src    the source image
-     * @param width  the target width
-     * @param height the target height
-     * @return the scaled image
-     */
-    public static Image scaleImageNearest(Image src, int width, int height) {
-        BufferedImage out = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = out.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-        g2.drawImage(src, 0, 0, width, height, null);
-        g2.dispose();
-        return out;
-    }
 }
