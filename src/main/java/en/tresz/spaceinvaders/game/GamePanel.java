@@ -1,8 +1,11 @@
 package en.tresz.spaceinvaders.game;
 
+import en.tresz.spaceinvaders.GameOverWindow;
+import en.tresz.spaceinvaders.HardGameOverWindow;
 import en.tresz.spaceinvaders.MainWindow;
-import en.tresz.spaceinvaders.game.aliens.*;
-import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
+import en.tresz.spaceinvaders.game.objects.GameObject;
+import en.tresz.spaceinvaders.game.objects.Player;
+import en.tresz.spaceinvaders.game.objects.aliens.*;
 import en.tresz.spaceinvaders.game.projectiles.PlayerProjectile;
 import en.tresz.spaceinvaders.util.*;
 
@@ -19,19 +22,25 @@ import java.awt.image.BufferedImage;
  */
 public class GamePanel extends JPanel {
 
-    private MainWindow gameWindow;
+    private MainWindow mainWindow;
 
     private transient BufferedImage backgroundImage = ImageLoader.loadBufferedImage("/images/background1.png");
 
     private transient ArrayList<GameObject> gameObjects = new ArrayList<>();
     private transient ArrayList<Alien> aliens = new ArrayList<>();
 
+    private transient HealthBar healthBar;
+
     private transient Player player;
+    private transient int maxHealth = 3;
 
     private transient AlienController alienController = new AlienController();
+    private transient PlayerController playerController = new PlayerController();
 
-    public GamePanel(MainWindow gw) {
-        this.gameWindow = gw;
+    private transient GameTimer gameTimer = new GameTimer();
+
+    public GamePanel(MainWindow mw) {
+        this.mainWindow = mw;
         setFocusable(true);
 
         initUI();
@@ -42,10 +51,15 @@ public class GamePanel extends JPanel {
      * Initializes the user interface.
      */
     private void initUI() {
-        player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 20, 3);
-        player.setPosition(new Vector2D(gameWindow.getWidth() / 2, gameWindow.getHeight() - player.getHeight()));
-        gameObjects.add(player);
-        player.playerMovement(this);
+
+        setLayout(null);
+
+        gameTimer.setBounds(10, 10, 100, 30);
+        this.add(gameTimer);
+
+        healthBar = new HealthBar(maxHealth);
+        healthBar.setBounds(0, 0, mainWindow.getWidth() - 20, mainWindow.getHeight());
+        this.add(healthBar);
     }
 
     /**
@@ -55,16 +69,22 @@ public class GamePanel extends JPanel {
      */
     public void startGame(String difficulty) {
 
-        FastAlien alien1 = new FastAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5, 5);
-        FastAlien alien = new FastAlien(new Vector2D(300, 100), new Vector2D(2, 0), 5, 5);
+        gameObjects.clear();
+        aliens.clear();
+        gameTimer.reset();
+        gameTimer.start();
+        healthBar.reset();
 
-        GameObject proj = new AlienProjectile(alien.getPosition());
-        GameObject playerProj = new PlayerProjectile(player.getPosition());
+        FastAlien alien1 = new FastAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
+        FastAlien alien = new FastAlien(new Vector2D(300, 100), new Vector2D(2, 0), 5);
+
+        player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 20, maxHealth);
+        player.setPosition(new Vector2D(mainWindow.getWidth() / 2, mainWindow.getHeight() - player.getHeight()));
+        gameObjects.add(player);
+        player.playerMovement(this);
 
         gameObjects.add(alien);
         gameObjects.add(alien1);
-        gameObjects.add(proj);
-        gameObjects.add(playerProj);
 
         createObjects(difficulty);
         alienController.addAllAliens(gameObjects, aliens);
@@ -72,7 +92,15 @@ public class GamePanel extends JPanel {
         Timer timer;
 
         timer = new Timer(10, e -> {
-            updateGame();
+            if (!updateGame()) {
+                ((Timer) e.getSource()).stop();
+                gameTimer.stop();
+                HardGameOverWindow hardGameOverWindow = new HardGameOverWindow(gameTimer.getTotalSeconds(), mainWindow);
+                hardGameOverWindow.setVisible(difficulty.equals("Hard"));
+                GameOverWindow gameOverWindow = new GameOverWindow(gameTimer.getTotalSeconds(), mainWindow);
+                gameOverWindow.setVisible(!difficulty.equals("Hard"));
+
+            }
             repaint();
         });
         timer.start();
@@ -85,9 +113,9 @@ public class GamePanel extends JPanel {
     /**
      * Updates the game state.
      */
-    private void updateGame() {
-        objectsToAdd.clear(); // Clear before each update
-        objectsToRemove.clear(); // Clear before each update
+    private boolean updateGame() {
+        objectsToAdd.clear();
+        objectsToRemove.clear();
 
         for (GameObject object : gameObjects) {
             object.update(this);
@@ -97,19 +125,22 @@ public class GamePanel extends JPanel {
                 }
                 alienController.handleAlienColision(alienObject, this);
                 alienObject.shoot(this);
-                if (alienObject.reachedBottom(this)) {
-                    // TODO: Game over logic
-                }
             } else if (object instanceof PlayerProjectile projectile) {
                 alienController.handleAlienHit(projectile, this);
             } else if (object instanceof Player playerObject) {
-                playerObject.shoot(this);
+                playerController.handlePlayerHit(playerObject, this);
+                // playerObject.shoot(this);
+                if (playerObject.getHealth() <= 0 || alienController.areAllAliensDestroyed(this)
+                        || alienController.hasAlienHitBottom(this, playerObject)) {
+                    return false; // Game over
+                }
             }
         }
 
         // Add new objects after iteration completes
         gameObjects.addAll(objectsToAdd);
         gameObjects.removeAll(objectsToRemove);
+        return true;
     }
 
     /**
@@ -161,5 +192,9 @@ public class GamePanel extends JPanel {
 
     public void removeGameObject(GameObject object) {
         objectsToRemove.add(object);
+    }
+
+    public HealthBar getHealthBar() {
+        return healthBar;
     }
 }

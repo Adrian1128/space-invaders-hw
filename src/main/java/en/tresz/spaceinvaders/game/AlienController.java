@@ -1,7 +1,8 @@
 package en.tresz.spaceinvaders.game;
 
-import en.tresz.spaceinvaders.game.aliens.Alien;
-
+import en.tresz.spaceinvaders.game.objects.GameObject;
+import en.tresz.spaceinvaders.game.objects.Player;
+import en.tresz.spaceinvaders.game.objects.aliens.Alien;
 import en.tresz.spaceinvaders.game.projectiles.PlayerProjectile;
 
 import java.util.List;
@@ -56,4 +57,18 @@ public class AlienController {
         }
     }
 
+    public boolean hasAlienHitBottom(GamePanel gamePanel, Player player) {
+        List<Alien> aliens = getAllAliens(gamePanel);
+        for (Alien alien : aliens) {
+            if (alien.reachedBottom(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean areAllAliensDestroyed(GamePanel gamePanel) {
+        List<Alien> aliens = getAllAliens(gamePanel);
+        return aliens.isEmpty();
+    }
 }

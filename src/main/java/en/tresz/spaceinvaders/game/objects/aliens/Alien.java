@@ -1,14 +1,13 @@
-package en.tresz.spaceinvaders.game.aliens;
+package en.tresz.spaceinvaders.game.objects.aliens;
 
-import en.tresz.spaceinvaders.game.GameObject;
 import en.tresz.spaceinvaders.game.GamePanel;
+import en.tresz.spaceinvaders.game.objects.GameObject;
+import en.tresz.spaceinvaders.game.objects.Player;
 import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
 import en.tresz.spaceinvaders.util.*;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-
-import javax.swing.JPanel;
 
 /**
  * The Alien class represents a generic alien, that does not shoot, only moves.
@@ -20,7 +19,7 @@ public abstract class Alien extends GameObject {
     private int collisionCount = 0;
 
     // number of wall collisions before requesting to move down
-    private int closingInTreshold = 4;
+    private int closingInTreshold = 6;
 
     private int hitSpeed;
 
@@ -37,9 +36,8 @@ public abstract class Alien extends GameObject {
         this.hitSpeed = alien.hitSpeed;
     }
 
-    protected Alien(Vector2D p, Vector2D v, int width, int closingInTreshold, int hitSpeed) {
+    protected Alien(Vector2D p, Vector2D v, int width, int hitSpeed) {
         super(p, v);
-        this.closingInTreshold = closingInTreshold;
         this.width = width;
         this.height = 80;
         velocity.setY(height);
@@ -74,12 +72,13 @@ public abstract class Alien extends GameObject {
      * Draws the alien.
      */
     @Override
-    protected void draw(Graphics g) {
+    public void draw(Graphics g) {
         g.drawImage(alienImage, position.centerX(width), position.centerY(height), width, height, null);
     }
 
-    public boolean reachedBottom(JPanel gamePanel) {
-        return getPosition().getY() + getHalfHeight() >= gamePanel.getHeight();
+    public boolean reachedBottom(Player player) {
+        return getPosition().getY()
+                + getHalfHeight() >= (player.getPosition().getY() - player.getHeight());
     }
 
     /**

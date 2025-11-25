@@ -63,7 +63,7 @@ public class MainWindow extends JFrame {
         this.add(mainPanel);
 
         // the default panel is the main menu
-        showPanel(PanelType.MENU.name());
+        showPanel(PanelType.MENU);
     }
 
     /**
@@ -71,8 +71,8 @@ public class MainWindow extends JFrame {
      * 
      * @param panelName the name of the panel to show
      */
-    public void showPanel(String panelName) {
-        cardLayout.show(mainPanel, panelName);
+    public void showPanel(PanelType panelType) {
+        cardLayout.show(mainPanel, panelType.name());
     }
 
     /**
@@ -82,7 +82,7 @@ public class MainWindow extends JFrame {
      */
     public void startGame(String difficulty) {
         gamePanel.startGame(difficulty);
-        showPanel(PanelType.GAME.name());
+        showPanel(PanelType.GAME);
     }
 
 }

@@ -1,9 +1,9 @@
 package en.tresz.spaceinvaders;
-//TODO: Add health system
+//TODO: Add explosion effect when player or alien is hit
 
-//TODO: Add timer
+//TODO: add comments to all classes and methods
 
-
+//TODO: add different speeds and hitspeed to different alien types
 
 public class Main {
 

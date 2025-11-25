@@ -1,5 +1,6 @@
-package en.tresz.spaceinvaders.game;
+package en.tresz.spaceinvaders.game.objects;
 
+import en.tresz.spaceinvaders.game.GamePanel;
 import en.tresz.spaceinvaders.util.Vector2D;
 
 import java.awt.Graphics;
@@ -36,7 +37,7 @@ public abstract class GameObject {
     /**
      * Draws the object.
      */
-    protected abstract void draw(Graphics g);
+    public abstract void draw(Graphics g);
 
     public boolean intersects(GameObject other) {
         return !(position.getX() + getHalfWidth() < other.position.getX() - other.getHalfWidth()

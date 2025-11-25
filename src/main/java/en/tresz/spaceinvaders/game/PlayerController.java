@@ -1,14 +1,19 @@
 package en.tresz.spaceinvaders.game;
 
+import en.tresz.spaceinvaders.game.objects.GameObject;
+import en.tresz.spaceinvaders.game.objects.Player;
+import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
+
 public class PlayerController {
     public void handlePlayerHit(Player player, GamePanel gamePanel) {
-        int currentHealth = player.getHealth();
-        currentHealth -= 1;
-        player.setHealth(currentHealth);
-        if (currentHealth <= 0) {
-            gamePanel.removeGameObject(player);
-            // TODO: Handle game over logic
+        for (GameObject object : gamePanel.getGameObjects()) {
+            if (object instanceof AlienProjectile projectile && player.intersects(projectile)) {
+                player.setHealth(player.getHealth() - 1);
+                gamePanel.removeGameObject(projectile);
+                gamePanel.getHealthBar().takeDamage(1);
+                break;
+            }
         }
     }
-    
+
 }

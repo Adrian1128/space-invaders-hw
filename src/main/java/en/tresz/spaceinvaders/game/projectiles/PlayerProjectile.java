@@ -1,7 +1,7 @@
 package en.tresz.spaceinvaders.game.projectiles;
 
-import en.tresz.spaceinvaders.game.GameObject;
 import en.tresz.spaceinvaders.game.GamePanel;
+import en.tresz.spaceinvaders.game.objects.GameObject;
 import en.tresz.spaceinvaders.util.Vector2D;
 
 import java.awt.Graphics;

@@ -84,7 +84,7 @@ public class MainMenuPanel extends JPanel {
     private class PlayButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.PanelType.DIFFICULTY.name());
+            gameWindow.showPanel(MainWindow.PanelType.DIFFICULTY);
         }
     }
 
@@ -94,7 +94,7 @@ public class MainMenuPanel extends JPanel {
     private class ScoreboardButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.PanelType.SCOREBOARD.name());
+            gameWindow.showPanel(MainWindow.PanelType.SCOREBOARD);
         }
     }
 

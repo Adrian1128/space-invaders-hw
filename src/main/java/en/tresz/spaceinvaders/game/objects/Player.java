@@ -1,5 +1,6 @@
-package en.tresz.spaceinvaders.game;
+package en.tresz.spaceinvaders.game.objects;
 
+import en.tresz.spaceinvaders.game.GamePanel;
 import en.tresz.spaceinvaders.game.projectiles.PlayerProjectile;
 import en.tresz.spaceinvaders.util.ImageLoader;
 import en.tresz.spaceinvaders.util.Vector2D;

@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 //TODO: customize this window
-public class GameOverWindow extends JFrame implements WindowListener, ActionListener {
+public class HardGameOverWindow extends JFrame implements WindowListener, ActionListener {
 
     private MainWindow mainWindow;
 
@@ -14,9 +14,11 @@ public class GameOverWindow extends JFrame implements WindowListener, ActionList
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
 
-    JButton playAgainButton = new JButton("Play Again");
+    JTextField nameArea = new JTextField(20);
 
-    public GameOverWindow(int time, MainWindow mainWindow) {
+    JButton enter = new JButton("Enter");
+
+    public HardGameOverWindow(int time, MainWindow mainWindow) {
         this.mainWindow = mainWindow;
         setTitle("Game Over");
         setSize(300, 200);
@@ -24,7 +26,10 @@ public class GameOverWindow extends JFrame implements WindowListener, ActionList
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        playAgainButton.addActionListener(this);
+        nameArea.addActionListener(this);
+
+        enter.addActionListener(this);
+
         addWindowListener(this);
 
         int minutes = time / 60;
@@ -33,14 +38,23 @@ public class GameOverWindow extends JFrame implements WindowListener, ActionList
         gbc.gridy = 0;
         panel.add(text, gbc);
 
+        JLabel name = new JLabel("Enter your name:");
         gbc.gridy = 1;
-        panel.add(playAgainButton, gbc);
+        panel.add(name, gbc);
+
+        gbc.gridy = 2;
+        panel.add(nameArea, gbc);
+
+        gbc.gridy = 3;
+        panel.add(enter, gbc);
 
         add(panel);
     }
 
     public String getPlayerName() {
         return playerName;
+
+        // TODO: JSON save score logic
     }
 
     @Override

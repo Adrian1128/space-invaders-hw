@@ -117,7 +117,7 @@ public class DifficultyMenuPanel extends JPanel {
     private class BackButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            gameWindow.showPanel(MainWindow.PanelType.MENU.name());
+            gameWindow.showPanel(MainWindow.PanelType.MENU);
         }
     }
 }
