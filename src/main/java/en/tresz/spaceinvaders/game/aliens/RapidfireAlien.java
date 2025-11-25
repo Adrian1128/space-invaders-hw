@@ -12,8 +12,8 @@ public class RapidfireAlien extends Alien {
      * @param v                 the velocity vector
      * @param closingInTreshold the number of wall collisions before moving down
      */
-    public RapidfireAlien(Vector2D p, Vector2D v, int closingInTreshold) {
-        super(p, v, 60, closingInTreshold);
+    public RapidfireAlien(Vector2D p, Vector2D v, int closingInTreshold, int hitSpeed) {
+        super(p, v, 60, closingInTreshold, hitSpeed);
         alienImage = ImageLoader.loadBufferedImage("/images/rapidfire-alien.png");
     }
 

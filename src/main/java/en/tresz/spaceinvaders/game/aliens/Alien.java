@@ -2,6 +2,7 @@ package en.tresz.spaceinvaders.game.aliens;
 
 import en.tresz.spaceinvaders.game.GameObject;
 import en.tresz.spaceinvaders.game.GamePanel;
+import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
 import en.tresz.spaceinvaders.util.*;
 
 import java.awt.Graphics;
@@ -15,35 +16,34 @@ import javax.swing.JPanel;
 public abstract class Alien extends GameObject {
     protected BufferedImage alienImage;
 
-    // default sizes
-    protected int width = 80;
-
-    // static because every alien moves down by it's height, and every alien is the
-    // same height
-    protected static final int HEIGHT = 80;
-
     // counts how many times the alien has collided with the wall
     private int collisionCount = 0;
 
     // number of wall collisions before requesting to move down
     private int closingInTreshold = 4;
 
+    private int hitSpeed;
+
     // flag to request all aliens to move down
     private boolean requestGlobalMoveDown = false;
 
-    /**
-     * Constructor for the Alien class, sets the y velocity to the height of the
-     * alien.
-     * 
-     * @param p                 the position vector
-     * @param v                 the velocity vector
-     * @param closingInTreshold the number of wall collisions before moving down
-     */
-    protected Alien(Vector2D p, Vector2D v, int width, int closingInTreshold) {
+    private int shootingInterval = 500;
+
+    protected Alien(Alien alien) {
+        super(alien.position, alien.velocity);
+        this.closingInTreshold = alien.closingInTreshold;
+        this.width = alien.width;
+        this.height = alien.height;
+        this.hitSpeed = alien.hitSpeed;
+    }
+
+    protected Alien(Vector2D p, Vector2D v, int width, int closingInTreshold, int hitSpeed) {
         super(p, v);
         this.closingInTreshold = closingInTreshold;
         this.width = width;
-        velocity.setY(HEIGHT);
+        this.height = 80;
+        velocity.setY(height);
+        this.hitSpeed = hitSpeed;
     }
 
     /**
@@ -70,19 +70,12 @@ public abstract class Alien extends GameObject {
 
     }
 
-    public boolean intersects(Alien other) {
-        return !(position.getX() + getHalfWidth() < other.position.getX() - other.getHalfWidth() ||
-                position.getX() - getHalfWidth() > other.position.getX() + other.getHalfWidth() ||
-                position.getY() + getHalfHeight() < other.position.getY() - other.getHalfHeight() ||
-                position.getY() - getHalfHeight() > other.position.getY() + other.getHalfHeight());
-    }
-
     /**
      * Draws the alien.
      */
     @Override
     protected void draw(Graphics g) {
-        g.drawImage(alienImage, position.centerX(width), position.centerY(HEIGHT), width, HEIGHT, null);
+        g.drawImage(alienImage, position.centerX(width), position.centerY(height), width, height, null);
     }
 
     public boolean reachedBottom(JPanel gamePanel) {
@@ -102,32 +95,6 @@ public abstract class Alien extends GameObject {
         return false;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return HEIGHT;
-    }
-
-    /**
-     * Gets half the width of the alien.
-     * 
-     * @return
-     */
-    public int getHalfWidth() {
-        return width / 2;
-    }
-
-    /**
-     * Gets half the height of the alien.
-     * 
-     * @return
-     */
-    public int getHalfHeight() {
-        return HEIGHT / 2;
-    }
-
     public int getClosingInTreshold() {
         return closingInTreshold;
     }
@@ -136,4 +103,18 @@ public abstract class Alien extends GameObject {
         collisionCount = count;
     }
 
+    public void shoot(GamePanel gamePanel) {
+        if (shootingInterval > 0) {
+            shootingInterval -= hitSpeed;
+            return;
+        }
+        Vector2D projectilePosition = new Vector2D(position.getX(), position.getY() + getHalfHeight());
+        AlienProjectile projectile = new AlienProjectile(projectilePosition);
+        gamePanel.addGameObject(projectile);
+        shootingInterval = 500;
+    }
+
+    public int getHitSpeed() {
+        return hitSpeed;
+    }
 }

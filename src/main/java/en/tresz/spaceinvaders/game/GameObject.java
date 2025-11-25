@@ -11,6 +11,9 @@ public abstract class GameObject {
     protected Vector2D position;
     protected Vector2D velocity;
 
+    protected int width;
+    protected int height;
+
     /**
      * Constructor for the GameObject class.
      * 
@@ -35,6 +38,13 @@ public abstract class GameObject {
      */
     protected abstract void draw(Graphics g);
 
+    public boolean intersects(GameObject other) {
+        return !(position.getX() + getHalfWidth() < other.position.getX() - other.getHalfWidth()
+                || position.getX() - getHalfWidth() > other.position.getX() + other.getHalfWidth()
+                || position.getY() + getHalfHeight() < other.position.getY() - other.getHalfHeight()
+                || position.getY() - getHalfHeight() > other.position.getY() + other.getHalfHeight());
+    }
+
     public Vector2D getPosition() {
         return position;
     }
@@ -49,5 +59,21 @@ public abstract class GameObject {
 
     public void setVelocity(Vector2D v) {
         this.velocity = v;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getHalfWidth() {
+        return width / 2;
+    }
+
+    public int getHalfHeight() {
+        return height / 2;
     }
 }

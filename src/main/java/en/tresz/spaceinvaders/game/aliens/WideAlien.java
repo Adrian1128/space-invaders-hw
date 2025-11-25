@@ -11,8 +11,8 @@ public class WideAlien extends Alien {
      * @param v                 the velocity vector
      * @param closingInTreshold the number of wall collisions before moving down
      */
-    public WideAlien(Vector2D p, Vector2D v, int closingInTreshold) {
-        super(p, v, 65, closingInTreshold);
+    public WideAlien(Vector2D p, Vector2D v, int closingInTreshold, int hitSpeed) {
+        super(p, v, 65, closingInTreshold, hitSpeed);
         alienImage = ImageLoader.loadBufferedImage("/images/wide-alien.png");
     }
 }

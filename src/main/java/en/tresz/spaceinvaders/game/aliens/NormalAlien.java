@@ -13,8 +13,8 @@ public class NormalAlien extends Alien {
      * @param v                 the velocity vector
      * @param closingInTreshold the number of wall collisions before moving down
      */
-    public NormalAlien(Vector2D p, Vector2D v, int closingInTreshold) {
-        super(p, v, 50, closingInTreshold);
+    public NormalAlien(Vector2D p, Vector2D v, int closingInTreshold, int hitSpeed) {
+        super(p, v, 50, closingInTreshold, hitSpeed);
         alienImage = ImageLoader.loadBufferedImage("/images/normal-alien.png");
     }
 
