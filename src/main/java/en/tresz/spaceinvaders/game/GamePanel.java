@@ -2,6 +2,7 @@ package en.tresz.spaceinvaders.game;
 
 import en.tresz.spaceinvaders.MainWindow;
 import en.tresz.spaceinvaders.game.aliens.*;
+import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
 import en.tresz.spaceinvaders.util.*;
 
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import javax.swing.Timer;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.awt.Color;
 
 /**
  * The panel where the game runs.
@@ -20,15 +20,19 @@ public class GamePanel extends JPanel {
 
     private MainWindow gameWindow;
 
-    private transient BufferedImage backgroundImage = ImageLoader.loadBufferedImage("/images/background1.png");
+    private BufferedImage backgroundImage = ImageLoader.loadBufferedImage("/images/background1.png");
 
-    private transient ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private transient ArrayList<Alien> aliens = new ArrayList<>();
+    private ArrayList<GameObject> gameObjects = new ArrayList<>();
 
-    private transient AlienController alienController = new AlienController(aliens);
+    private Player player;
+
+    public boolean leftPressed = false;
+    public boolean rightPressed = false;
 
     public GamePanel(MainWindow gw) {
         this.gameWindow = gw;
+        setFocusable(true);
+
         initUI();
     }
 
@@ -37,8 +41,10 @@ public class GamePanel extends JPanel {
      * Initializes the user interface.
      */
     private void initUI() {
-        setBackground(Color.BLACK);
-
+        player = new Player(new Vector2D(gameWindow.getWidth() / 2, gameWindow.getHeight() - Player.HEIGHT),
+                new Vector2D(5, 0));
+        gameObjects.add(player);
+        player.playerMovement(this);
     }
 
     /**
@@ -50,16 +56,20 @@ public class GamePanel extends JPanel {
 
         FastAlien alien1 = new FastAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
         FastAlien alien = new FastAlien(new Vector2D(300, 100), new Vector2D(2, 0), 5);
-        
+
+        GameObject proj = new AlienProjectile(new Vector2D(100, 100), new Vector2D(0, 6));
+
         gameObjects.add(alien);
         gameObjects.add(alien1);
-        aliens.add(alien);
-        aliens.add(alien1);
-
+        gameObjects.add(proj);
+        
         // createObjects(difficulty);
-        Timer timer;
+        AlienController.addAllAliens(gameObjects);
 
-        timer = new Timer(3, e -> {
+        Timer timer;
+        
+        timer = new Timer(10, e -> {
+            proj.update(this);
             updateGame();
             repaint();
         });
@@ -72,7 +82,24 @@ public class GamePanel extends JPanel {
      */
     private void updateGame() {
 
-        alienController.updateAllAliens(this);
+        for (GameObject object : gameObjects) {
+            if (object instanceof Alien alien) {
+                if (alien.isRequestGlobalMoveDown()) {
+                    AlienController.moveDownAllAliens();
+                } else {
+                    alien.update(this);
+                }
+                AlienController.handleAlienColision(alien);
+
+                if (alien.reachedBottom(this)) {
+                    // TODO: Game over logic
+                }
+            }
+            if (object instanceof Player) {
+                player.update(this);
+            }
+
+        }
 
     }
 
@@ -85,6 +112,8 @@ public class GamePanel extends JPanel {
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
+
+        player.draw(g);
 
         for (GameObject object : gameObjects) {
             object.draw(g);

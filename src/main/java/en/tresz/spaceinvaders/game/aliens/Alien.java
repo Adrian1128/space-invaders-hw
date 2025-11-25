@@ -1,6 +1,7 @@
 package en.tresz.spaceinvaders.game.aliens;
 
 import en.tresz.spaceinvaders.game.GameObject;
+import en.tresz.spaceinvaders.game.GamePanel;
 import en.tresz.spaceinvaders.util.*;
 
 import java.awt.Graphics;
@@ -48,15 +49,16 @@ public abstract class Alien extends GameObject {
     /**
      * Updates the alien's position and handles wall collisions.
      */
-    public void update(int canvasWidth, int canvasHeight) {
+    public void update(GamePanel gamePanel) {
         position.addX(velocity.getX());
 
-        if ((position.getX() + getHalfWidth()) >= canvasWidth) {
-            position.setX(canvasWidth - getHalfWidth()); // if the velocity is too high, prevent it going out of bounds
+        if ((position.getX() + getHalfWidth()) >= gamePanel.getWidth()) {
+            position.setX(gamePanel.getWidth() - getHalfWidth()); // if the velocity is too high, prevent it going out
+                                                                  // of bounds
             velocity.setX(-velocity.getX());
             collisionCount++;
         } else if ((position.getX() - getHalfWidth()) <= 0) {
-            position.setX(getHalfWidth()); // if the velocity is too high, prevent it going out of bounds
+            position.setX(0 + getHalfWidth()); // if the velocity is too high, prevent it going out of bounds
             velocity.setX(-velocity.getX());
             collisionCount++;
         }
@@ -74,7 +76,7 @@ public abstract class Alien extends GameObject {
                 position.getY() + getHalfHeight() < other.position.getY() - other.getHalfHeight() ||
                 position.getY() - getHalfHeight() > other.position.getY() + other.getHalfHeight());
     }
-    
+
     /**
      * Draws the alien.
      */

@@ -21,14 +21,14 @@ public abstract class GameObject {
         this.position = p;
         this.velocity = v;
     }
-    
+
     /**
      * Updates the object.
      * 
      * @param canvasWidth  width of the canvas where the object is drawn
      * @param canvasHeight height of the canvas where the object is drawn
      */
-    public abstract void update(int canvasWidth, int canvasHeight);
+    public abstract void update(GamePanel gamePanel);
 
     /**
      * Draws the object.
