@@ -111,4 +111,17 @@ public class Vector2D {
         this.y -= y;
     }
 
+    public void negate() {
+        this.x = -this.x;
+        this.y = -this.y;
+    }
+
+    public void negateX() {
+        this.x = -this.x;
+    }
+
+    public void negateY() {
+        this.y = -this.y;
+    }
+
 }

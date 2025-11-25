@@ -31,7 +31,8 @@ public class GamePanel extends JPanel {
         this.gameWindow = gw;
         initUI();
     }
-    // 
+
+    //
     /**
      * Initializes the user interface.
      */
@@ -47,8 +48,8 @@ public class GamePanel extends JPanel {
      */
     public void startGame(String difficulty) {
 
-        NormalAlien alien1 = new NormalAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
-        RapidfireAlien alien = new RapidfireAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
+        FastAlien alien1 = new FastAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
+        FastAlien alien = new FastAlien(new Vector2D(300, 100), new Vector2D(2, 0), 5);
         
         gameObjects.add(alien);
         gameObjects.add(alien1);
@@ -70,14 +71,8 @@ public class GamePanel extends JPanel {
      * Updates the game state.
      */
     private void updateGame() {
-        for (Alien alien : aliens) {
 
-            if (alien.isRequestGlobalMoveDown()) {
-                alienController.moveDownAllAliens();
-            } else {
-                alien.update(this.getWidth(), this.getHeight());
-            }
-        }
+        alienController.updateAllAliens(this);
 
     }
 

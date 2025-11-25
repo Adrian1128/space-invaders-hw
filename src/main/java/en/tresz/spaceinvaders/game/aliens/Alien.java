@@ -6,6 +6,8 @@ import en.tresz.spaceinvaders.util.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JPanel;
+
 /**
  * The Alien class represents a generic alien, that does not shoot, only moves.
  */
@@ -66,12 +68,23 @@ public abstract class Alien extends GameObject {
 
     }
 
+    public boolean intersects(Alien other) {
+        return !(position.getX() + getHalfWidth() < other.position.getX() - other.getHalfWidth() ||
+                position.getX() - getHalfWidth() > other.position.getX() + other.getHalfWidth() ||
+                position.getY() + getHalfHeight() < other.position.getY() - other.getHalfHeight() ||
+                position.getY() - getHalfHeight() > other.position.getY() + other.getHalfHeight());
+    }
+    
     /**
      * Draws the alien.
      */
     @Override
     protected void draw(Graphics g) {
         g.drawImage(alienImage, position.centerX(width), position.centerY(HEIGHT), width, HEIGHT, null);
+    }
+
+    public boolean reachedBottom(JPanel gamePanel) {
+        return getPosition().getY() + getHalfHeight() >= gamePanel.getHeight();
     }
 
     /**

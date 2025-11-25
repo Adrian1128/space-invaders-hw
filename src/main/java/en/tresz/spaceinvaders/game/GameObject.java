@@ -21,7 +21,7 @@ public abstract class GameObject {
         this.position = p;
         this.velocity = v;
     }
-
+    
     /**
      * Updates the object.
      * 
