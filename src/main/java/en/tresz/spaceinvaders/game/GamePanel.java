@@ -78,7 +78,6 @@ public class GamePanel extends JPanel {
      * @param difficulty the difficulty level
      */
     private void initGame(String difficulty) {
-        Player player;
         gameObjects.clear();
 
         aliens.clear();
@@ -88,7 +87,7 @@ public class GamePanel extends JPanel {
 
         healthBar.reset();
 
-        player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 10, maxHealth);
+        Player player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 10, maxHealth);
         player.setPosition(new Vector2D(mainWindow.getWidth() / 2, mainWindow.getHeight() - player.getHeight()));
         gameObjects.add(player);
         player.playerMovement(this);
@@ -138,7 +137,7 @@ public class GamePanel extends JPanel {
      * 
      * @return false if the game is over, true otherwise
      */
-    private boolean updateGame() {
+    public boolean updateGame() {
         objectsToAdd.clear();
         objectsToRemove.clear();
 
@@ -319,6 +318,15 @@ public class GamePanel extends JPanel {
     }
 
     /**
+     * Gets the list of aliens.
+     * 
+     * @return the list of aliens
+     */
+    public List<Alien> getAliens() {
+        return aliens;
+    }
+
+    /**
      * Adds a game object to the panel.
      * 
      * @param object the game object to add
@@ -354,10 +362,33 @@ public class GamePanel extends JPanel {
         return gameTimer;
     }
 
+    /**
+     * Sets the player hit status.
+     * 
+     * @param playerHit true if the player is hit, false otherwise
+     */
     public void setPlayerHit(boolean playerHit) {
         this.playerHit = playerHit;
         if (playerHit) {
             this.playerHitTimer = 50;
         }
+    }
+
+    /**
+     * Test method to add a game object directly (for testing purposes). !!!
+     * 
+     * @param object
+     */
+    public void testAddObject(GameObject object) {
+        gameObjects.add(object);
+    }
+
+    /**
+     * Test method to remove a game object directly (for testing purposes). !!!
+     * 
+     * @param object
+     */
+    public void testRemoveObject(GameObject object) {
+        gameObjects.remove(object);
     }
 }

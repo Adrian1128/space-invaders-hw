@@ -80,6 +80,15 @@ public class GameTimer extends JLabel {
     }
 
     /**
+     * Gets the Time object representing the current time.
+     * 
+     * @return the Time object
+     */
+    public Time getTime() {
+        return time;
+    }
+
+    /**
      * Gets the total time in seconds.
      * 
      * @return the total seconds elapsed

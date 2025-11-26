@@ -69,7 +69,7 @@ public class ScoreboardPanel extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Remove white border
         scrollPane.getViewport().setBackground(new java.awt.Color(0x222034));
         add(scrollPane, BorderLayout.CENTER);
-
+        
         // creating buttons
         JButton backButton = ButtonMaker.buttonSetup("Back", 180, 68);
         backButton.addActionListener(new BackButtonActionListener());

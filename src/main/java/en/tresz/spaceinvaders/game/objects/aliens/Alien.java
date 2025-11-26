@@ -70,12 +70,11 @@ public abstract class Alien extends GameObject {
         position.addX(velocity.getX());
 
         if ((position.getX() + getHalfWidth()) >= gamePanel.getWidth()) {
-            position.setX(gamePanel.getWidth() - getHalfWidth()); // if the velocity is too high, prevent it going out
-                                                                  // of bounds
+            position.setX(gamePanel.getWidth() - getHalfWidth());
             velocity.setX(-velocity.getX());
             collisionCount++;
         } else if ((position.getX() - getHalfWidth()) <= 0) {
-            position.setX(0 + getHalfWidth()); // if the velocity is too high, prevent it going out of bounds
+            position.setX(0 + getHalfWidth());
             velocity.setX(-velocity.getX());
             collisionCount++;
         }

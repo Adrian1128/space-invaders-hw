@@ -50,11 +50,13 @@ public class Player extends GameObject {
      * @param gamePanel the game panel for boundary checking
      */
     public void update(GamePanel gamePanel) {
+        position.setX(position.getX() + currentVelocity);
+
         if (position.getX() - width / 2 < 0)
             position.setX(0 + width / 2);
         if (position.getX() + width / 2 > gamePanel.getWidth())
             position.setX(gamePanel.getWidth() - width / 2);
-        position.setX(position.getX() + currentVelocity);
+
     }
 
     /**
@@ -186,5 +188,23 @@ public class Player extends GameObject {
      */
     public void setHealth(int health) {
         this.health = health;
+    }
+
+    /**
+     * Gets the player's hit speed.
+     * 
+     * @return the hit speed
+     */
+    public int getHitSpeed() {
+        return hitSpeed;
+    }
+
+    /**
+     * Gets the player's shooting interval.
+     * 
+     * @return the shooting interval in milliseconds
+     */
+    public int getShootingInterval() {
+        return shootingInterval;
     }
 }
