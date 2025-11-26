@@ -87,6 +87,8 @@ public class GamePanel extends JPanel {
 
         healthBar.reset();
 
+        playerHitTimer = 0;
+
         Player player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 10, maxHealth);
         player.setPosition(new Vector2D(mainWindow.getWidth() / 2, mainWindow.getHeight() - player.getHeight()));
         gameObjects.add(player);
