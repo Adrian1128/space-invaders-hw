@@ -21,14 +21,22 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 
+/**
+ * The main menu panel with options to play, view scoreboard, or exit.
+ */
 public class MainMenuPanel extends JPanel {
     private MainWindow gameWindow;
 
     private static final int BUTTON_WIDTH = 135;
     private static final int BUTTON_HEIGHT = 51;
 
-    private transient BufferedImage backgroundImage; // sonarlint suggestion (transient)
+    private transient BufferedImage backgroundImage;
 
+    /**
+     * Constructs a MainMenuPanel.
+     * 
+     * @param gw the main game window
+     */
     public MainMenuPanel(MainWindow gw) {
         gameWindow = gw;
         backgroundImage = ImageLoader.loadBufferedImage("/images/menu-background.png");
@@ -50,8 +58,6 @@ public class MainMenuPanel extends JPanel {
         add(Box.createVerticalGlue(), gbc);
         gbc.weighty = 0;
 
-        // creating the buttons
-
         JButton playButton = ButtonMaker.buttonSetup("play", BUTTON_WIDTH, BUTTON_HEIGHT);
 
         playButton.addActionListener(new PlayButtonActionListener());
@@ -69,6 +75,11 @@ public class MainMenuPanel extends JPanel {
         add(Box.createVerticalGlue(), gbc);
     }
 
+    /**
+     * Paints the background image scaled to fit the panel.
+     * 
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

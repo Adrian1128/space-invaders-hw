@@ -15,6 +15,12 @@ public class ImageLoader {
         // private constructor
     }
 
+    /**
+     * Loads a BufferedImage from the resources folder.
+     * 
+     * @param path the resource path to the image
+     * @return the loaded BufferedImage, or null if loading fails
+     */
     public static BufferedImage loadBufferedImage(String path) {
         URL imgUrl = ImageLoader.class.getResource(path);
 
@@ -32,13 +38,12 @@ public class ImageLoader {
     }
 
     /**
-     * !!!
      * Scales a BufferedImage to the given size using nearest-neighbor scaling.
      * 
      * @param img    the source image
      * @param width  the target width
      * @param height the target height
-     * @return the scaled image
+     * @return the scaled image, or null if the source image is null
      */
     public static BufferedImage scaledBufferedImageNearest(BufferedImage img, int width, int height) {
         if (img == null) {
@@ -55,7 +60,7 @@ public class ImageLoader {
                 scaled.setRGB(x, y, img.getRGB(srcX, srcY));
             }
         }
-
+        
         return scaled;
     }
 

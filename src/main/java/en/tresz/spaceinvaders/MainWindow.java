@@ -37,33 +37,68 @@ public class MainWindow extends JFrame {
     private ScoreboardPanel scoreboardPanel;
     private GamePanel gamePanel;
 
+    /**
+     * Constructs the main window and initializes all panels.
+     */
     public MainWindow() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // sonarlint suggested WindowConstants
         setTitle("Space Invaders");
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setResizable(false);
         setLocationRelativeTo(null);
-
-        // setting layout
+        
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-
-        // creating the panels
+        
         mainMenuPanel = new MainMenuPanel(this);
         difficultyMenuPanel = new DifficultyMenuPanel(this);
         scoreboardPanel = new ScoreboardPanel(this);
         gamePanel = new GamePanel(this);
-
-        // adding panels to main frame
+        
         mainPanel.add(mainMenuPanel, PanelType.MENU.name());
         mainPanel.add(difficultyMenuPanel, PanelType.DIFFICULTY.name());
         mainPanel.add(scoreboardPanel, PanelType.SCOREBOARD.name());
         mainPanel.add(gamePanel, PanelType.GAME.name());
 
         this.add(mainPanel);
-
-        // the default panel is the main menu
+        
         showPanel(PanelType.MENU);
+    }
+
+    /**
+     * Gets the game panel.
+     * 
+     * @return the game panel
+     */
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
+
+    /**
+     * Gets the scoreboard panel.
+     * 
+     * @return the scoreboard panel
+     */
+    public ScoreboardPanel getScoreboardPanel() {
+        return scoreboardPanel;
+    }
+
+    /**
+     * Gets the main menu panel.
+     * 
+     * @return the main menu panel
+     */
+    public MainMenuPanel getMainMenuPanel() {
+        return mainMenuPanel;
+    }
+
+    /**
+     * Gets the difficulty menu panel.
+     * 
+     * @return the difficulty menu panel
+     */
+    public DifficultyMenuPanel getDifficultyMenuPanel() {
+        return difficultyMenuPanel;
     }
 
     /**

@@ -6,7 +6,6 @@ import en.tresz.spaceinvaders.util.ImageLoader;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JLabel;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -21,14 +20,19 @@ import java.awt.Graphics;
  * Shows options for Easy, Medium, Hard, and a Back button.
  */
 public class DifficultyMenuPanel extends JPanel {
-    
+
     private MainWindow gameWindow;
 
     private static final int BUTTON_WIDTH = 135;
     private static final int BUTTON_HEIGHT = 51;
 
-    private transient BufferedImage backgroundImage; // sonarlint suggestion (transient)
+    private transient BufferedImage backgroundImage;
 
+    /**
+     * Constructs a DifficultyMenuPanel.
+     * 
+     * @param gw the main game window
+     */
     public DifficultyMenuPanel(MainWindow gw) {
         this.gameWindow = gw;
         backgroundImage = ImageLoader.loadBufferedImage("/images/menu-background.png");
@@ -45,11 +49,7 @@ public class DifficultyMenuPanel extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.NONE;
-
-        // Title Label
-        add(new JLabel("Select Difficulty"), gbc);
-
-        // creating the buttons
+        
         JButton easyButton = ButtonMaker.buttonSetup("easy", BUTTON_WIDTH, BUTTON_HEIGHT);
         easyButton.addActionListener(new EasyButtonActionListener());
         add(easyButton, gbc);
@@ -71,6 +71,8 @@ public class DifficultyMenuPanel extends JPanel {
 
     /**
      * Paints the background image scaled to fit the panel.
+     * 
+     * @param g the graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {

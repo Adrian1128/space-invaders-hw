@@ -3,31 +3,38 @@ package en.tresz.spaceinvaders.game.objects.aliens;
 import en.tresz.spaceinvaders.game.GamePanel;
 import en.tresz.spaceinvaders.game.objects.GameObject;
 import en.tresz.spaceinvaders.game.objects.Player;
-import en.tresz.spaceinvaders.game.projectiles.AlienProjectile;
+import en.tresz.spaceinvaders.game.objects.projectiles.AlienProjectile;
 import en.tresz.spaceinvaders.util.*;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 /**
- * The Alien class represents a generic alien, that does not shoot, only moves.
+ * The Alien class represents a generic alien.
  */
 public abstract class Alien extends GameObject {
     protected BufferedImage alienImage;
 
+    public static final int ALIEN_HEIGHT = 80;
+
     // counts how many times the alien has collided with the wall
-    private int collisionCount = 0;
+    protected int collisionCount = 0;
 
-    // number of wall collisions before requesting to move down
-    private int closingInTreshold = 6;
+    // after this number of collisions, the alien requests all aliens to move down
+    protected int closingInTreshold = 6;
 
-    private int hitSpeed;
+    protected int hitSpeed;
 
     // flag to request all aliens to move down
-    private boolean requestGlobalMoveDown = false;
+    protected boolean requestGlobalMoveDown = false;
 
-    private int shootingInterval = 500;
+    protected int shootingInterval = 500;
 
+    /**
+     * Copy constructor for creating a new Alien from an existing one.
+     * 
+     * @param alien the alien to copy from
+     */
     protected Alien(Alien alien) {
         super(alien.position, alien.velocity);
         this.closingInTreshold = alien.closingInTreshold;
@@ -36,16 +43,28 @@ public abstract class Alien extends GameObject {
         this.hitSpeed = alien.hitSpeed;
     }
 
+    /**
+     * Constructs a new Alien with the specified parameters.
+     * 
+     * @param p        the initial position of the alien
+     * @param v        the initial velocity of the alien
+     * @param width    the width of the alien
+     * @param hitSpeed the speed multiplier for movement and shooting
+     */
     protected Alien(Vector2D p, Vector2D v, int width, int hitSpeed) {
         super(p, v);
         this.width = width;
-        this.height = 80;
+        this.height = ALIEN_HEIGHT;
         velocity.setY(height);
         this.hitSpeed = hitSpeed;
     }
 
     /**
      * Updates the alien's position and handles wall collisions.
+     * Increments collision count when hitting walls and requests global move down
+     * when threshold is reached.
+     * 
+     * @param gamePanel the game panel for boundary checking
      */
     public void update(GamePanel gamePanel) {
         position.addX(velocity.getX());
@@ -69,39 +88,11 @@ public abstract class Alien extends GameObject {
     }
 
     /**
-     * Draws the alien.
-     */
-    @Override
-    public void draw(Graphics g) {
-        g.drawImage(alienImage, position.centerX(width), position.centerY(height), width, height, null);
-    }
-
-    public boolean reachedBottom(Player player) {
-        return getPosition().getY()
-                + getHalfHeight() >= (player.getPosition().getY() - player.getHeight());
-    }
-
-    /**
-     * Checks if the alien requests all aliens to move down.
+     * Attempts to shoot a projectile towards the player.
+     * The shooting interval is controlled by hitSpeed and resets after each shot.
      * 
-     * @return true if the alien requests all aliens to move down, false otherwise
+     * @param gamePanel the game panel to add the projectile to
      */
-    public boolean isRequestGlobalMoveDown() {
-        if (requestGlobalMoveDown) {
-            requestGlobalMoveDown = false;
-            return true;
-        }
-        return false;
-    }
-
-    public int getClosingInTreshold() {
-        return closingInTreshold;
-    }
-
-    public void setCollisionCount(int count) {
-        collisionCount = count;
-    }
-
     public void shoot(GamePanel gamePanel) {
         if (shootingInterval > 0) {
             shootingInterval -= hitSpeed;
@@ -113,7 +104,75 @@ public abstract class Alien extends GameObject {
         shootingInterval = 500;
     }
 
+    /**
+     * Draws the alien on the screen using its image.
+     * 
+     * @param g the graphics context to draw on
+     */
+    @Override
+    public void draw(Graphics g) {
+        g.drawImage(alienImage, position.centerX(width), position.centerY(height), width, height, null);
+    }
+
+    /**
+     * Checks if the alien has reached the player's vertical position.
+     * 
+     * @param player the player to check against
+     * @return true if the alien has reached the player's level, false otherwise
+     */
+    public boolean reachedBottom(Player player) {
+        return getPosition().getY()
+                + getHalfHeight() >= (player.getPosition().getY() - player.getHeight());
+    }
+
+    /**
+     * Checks if the alien requests all aliens to move down, resetting the flag
+     * after checking.
+     * 
+     * @return true if the alien requests all aliens to move down, false otherwise
+     */
+    public boolean isRequestGlobalMoveDown() {
+        if (requestGlobalMoveDown) {
+            requestGlobalMoveDown = false;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the collision threshold before the alien requests a global move down.
+     * 
+     * @return the closing in threshold value
+     */
+    public int getClosingInTreshold() {
+        return closingInTreshold;
+    }
+
+    /**
+     * Sets the collision count for this alien.
+     * 
+     * @param count the new collision count value
+     */
+    public void setCollisionCount(int count) {
+        collisionCount = count;
+    }
+
+    /**
+     * Gets the hit speed multiplier for this alien.
+     * 
+     * @return the hit speed value
+     */
     public int getHitSpeed() {
         return hitSpeed;
+    }
+
+    /**
+     * Determines if a random event should occur based on a given percentage.
+     * 
+     * @param percentage the probability of the event occurring (0-100)
+     * @return true if the random event occurs, false otherwise
+     */
+    public boolean chance(double percentage) {
+        return Math.random() < (percentage / 100.0);
     }
 }

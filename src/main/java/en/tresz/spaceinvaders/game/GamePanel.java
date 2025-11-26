@@ -6,10 +6,11 @@ import en.tresz.spaceinvaders.MainWindow;
 import en.tresz.spaceinvaders.game.objects.GameObject;
 import en.tresz.spaceinvaders.game.objects.Player;
 import en.tresz.spaceinvaders.game.objects.aliens.*;
-import en.tresz.spaceinvaders.game.projectiles.PlayerProjectile;
+import en.tresz.spaceinvaders.game.objects.projectiles.PlayerProjectile;
 import en.tresz.spaceinvaders.util.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -31,7 +32,6 @@ public class GamePanel extends JPanel {
 
     private transient HealthBar healthBar;
 
-    private transient Player player;
     private transient int maxHealth = 3;
 
     private transient AlienController alienController = new AlienController();
@@ -39,6 +39,16 @@ public class GamePanel extends JPanel {
 
     private transient GameTimer gameTimer = new GameTimer();
 
+    private transient boolean won = false;
+
+    private transient boolean playerHit = false;
+    private transient int playerHitTimer = 30;
+
+    /**
+     * Constructs a GamePanel.
+     * 
+     * @param mw the main window reference
+     */
     public GamePanel(MainWindow mw) {
         this.mainWindow = mw;
         setFocusable(true);
@@ -63,42 +73,55 @@ public class GamePanel extends JPanel {
     }
 
     /**
+     * Initializes the game state based on the selected difficulty.
+     * 
+     * @param difficulty the difficulty level
+     */
+    private void initGame(String difficulty) {
+        Player player;
+        gameObjects.clear();
+
+        aliens.clear();
+
+        gameTimer.reset();
+        gameTimer.start();
+
+        healthBar.reset();
+
+        player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 10, maxHealth);
+        player.setPosition(new Vector2D(mainWindow.getWidth() / 2, mainWindow.getHeight() - player.getHeight()));
+        gameObjects.add(player);
+        player.playerMovement(this);
+
+        createObjects(difficulty);
+        alienController.addAllAliens(gameObjects, aliens);
+
+    }
+
+    /**
      * Starts the game with the given difficulty.
      * 
      * @param difficulty the difficulty of the game
      */
     public void startGame(String difficulty) {
 
-        gameObjects.clear();
-        aliens.clear();
-        gameTimer.reset();
-        gameTimer.start();
-        healthBar.reset();
-
-        FastAlien alien1 = new FastAlien(new Vector2D(100, 100), new Vector2D(2, 0), 5);
-        FastAlien alien = new FastAlien(new Vector2D(300, 100), new Vector2D(2, 0), 5);
-
-        player = new Player(new Vector2D(0, 0), new Vector2D(5, 0), 20, maxHealth);
-        player.setPosition(new Vector2D(mainWindow.getWidth() / 2, mainWindow.getHeight() - player.getHeight()));
-        gameObjects.add(player);
-        player.playerMovement(this);
-
-        gameObjects.add(alien);
-        gameObjects.add(alien1);
-
-        createObjects(difficulty);
-        alienController.addAllAliens(gameObjects, aliens);
+        initGame(difficulty);
 
         Timer timer;
-
         timer = new Timer(10, e -> {
             if (!updateGame()) {
                 ((Timer) e.getSource()).stop();
                 gameTimer.stop();
-                HardGameOverWindow hardGameOverWindow = new HardGameOverWindow(gameTimer.getTotalSeconds(), mainWindow);
-                hardGameOverWindow.setVisible(difficulty.equals("Hard"));
-                GameOverWindow gameOverWindow = new GameOverWindow(gameTimer.getTotalSeconds(), mainWindow);
-                gameOverWindow.setVisible(!difficulty.equals("Hard"));
+
+                if (won && difficulty.equals("Hard")) {
+                    HardGameOverWindow hardGameOverWindow = new HardGameOverWindow(gameTimer.getTotalSeconds(),
+                            mainWindow);
+                    hardGameOverWindow.setVisible(true);
+                    mainWindow.getScoreboardPanel().refreshScores();
+                } else {
+                    GameOverWindow gameOverWindow = new GameOverWindow(gameTimer.getTotalSeconds(), mainWindow);
+                    gameOverWindow.setVisible(true);
+                }
 
             }
             repaint();
@@ -111,11 +134,15 @@ public class GamePanel extends JPanel {
     private transient ArrayList<GameObject> objectsToRemove = new ArrayList<>();
 
     /**
-     * Updates the game state.
+     * Updates the game state including object movements, collisions, and shooting.
+     * 
+     * @return false if the game is over, true otherwise
      */
     private boolean updateGame() {
         objectsToAdd.clear();
         objectsToRemove.clear();
+
+        alienController.handleAllAlienCollisions(this);
 
         for (GameObject object : gameObjects) {
             object.update(this);
@@ -123,23 +150,38 @@ public class GamePanel extends JPanel {
                 if (alienObject.isRequestGlobalMoveDown()) {
                     alienController.moveDownAllAliens(this);
                 }
-                alienController.handleAlienColision(alienObject, this);
-                alienObject.shoot(this);
+                if (alienObject.chance(50)) {
+                    alienObject.shoot(this);
+                }
             } else if (object instanceof PlayerProjectile projectile) {
                 alienController.handleAlienHit(projectile, this);
-            } else if (object instanceof Player playerObject) {
-                playerController.handlePlayerHit(playerObject, this);
-                // playerObject.shoot(this);
-                if (playerObject.getHealth() <= 0 || alienController.areAllAliensDestroyed(this)
-                        || alienController.hasAlienHitBottom(this, playerObject)) {
-                    return false; // Game over
-                }
+            } else if (object instanceof Player playerObject && !playerLogicHandler(playerObject)) {
+                return false;
             }
+
         }
 
-        // Add new objects after iteration completes
         gameObjects.addAll(objectsToAdd);
         gameObjects.removeAll(objectsToRemove);
+        return true;
+    }
+
+    /**
+     * Handles player game logic.
+     * 
+     * @param playerObject the player object
+     * @return false if the game is over, true otherwise
+     */
+    private boolean playerLogicHandler(Player playerObject) {
+        playerController.handlePlayerHit(playerObject, this);
+        playerObject.shoot(this);
+        if (playerObject.getHealth() <= 0 || alienController.hasAlienHitBottom(this, playerObject)) {
+            won = false;
+            return false; // Game over
+        } else if (alienController.areAllAliensDestroyed(this)) {
+            won = true;
+            return false; // Player wins
+        }
         return true;
     }
 
@@ -153,10 +195,19 @@ public class GamePanel extends JPanel {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
 
-        player.draw(g);
-
         for (GameObject object : gameObjects) {
-            object.draw(g);
+            if (object instanceof Player playerObject) {
+                if (playerHit) {
+                    playerHitTimer--;
+                    if (playerHitTimer <= 0) {
+                        playerHit = false;
+                    }
+                }
+                playerObject.draw(g, playerHit);
+
+            } else {
+                object.draw(g);
+            }
         }
     }
 
@@ -166,35 +217,147 @@ public class GamePanel extends JPanel {
      * @param difficulty
      */
     private void createObjects(String difficulty) {
-        // TODO: Create game objects based on difficulty
         switch (difficulty) {
             case "Easy":
-                // create easy objects
+                createEasyObjects();
                 break;
             case "Medium":
-                // create medium objects
+                createMediumObjects();
                 break;
             case "Hard":
-                // create hard objects
+                createHardObjects();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown difficulty: " + difficulty);
         }
     }
 
-    public ArrayList<GameObject> getGameObjects() {
+    /**
+     * Creates game objects for easy difficulty.
+     */
+    public void createEasyObjects() {
+        int xSpacing = 20;
+        int ySpacing = 10;
+        int firstRowY = 100;
+        for (int i = 0; i < 5; i++) {
+            NormalAlien alien1 = new NormalAlien(
+                    new Vector2D(100 + i * NormalAlien.NORMAL_ALIEN_WIDTH + xSpacing, firstRowY),
+                    new Vector2D(1, 0), 5);
+
+            FastAlien alien2 = new FastAlien(
+                    new Vector2D(100 + i * FastAlien.FAST_ALIEN_WIDTH + xSpacing,
+                            firstRowY + 2 * Alien.ALIEN_HEIGHT + 2 * ySpacing),
+                    new Vector2D(1, 0), 5);
+            gameObjects.add(alien1);
+            gameObjects.add(alien2);
+        }
+    }
+
+    /**
+     * Creates game objects for medium difficulty.
+     */
+    public void createMediumObjects() {
+        int xSpacing = 20;
+        int ySpacing = 10;
+        int firstRowY = 100;
+        for (int i = 0; i < 3; i++) {
+            FastAlien alien1 = new FastAlien(
+                    new Vector2D(100 + i * FastAlien.FAST_ALIEN_WIDTH + xSpacing, firstRowY),
+                    new Vector2D(1, 0), 5);
+            NormalAlien alien2 = new NormalAlien(
+                    new Vector2D(100 + i * NormalAlien.NORMAL_ALIEN_WIDTH + xSpacing,
+                            firstRowY + 2 * Alien.ALIEN_HEIGHT + 2 * ySpacing),
+                    new Vector2D(1, 0), 5);
+            RapidfireAlien alien3 = new RapidfireAlien(
+                    new Vector2D(100 + i * RapidfireAlien.RAPIDFIRE_ALIEN_WIDTH + xSpacing,
+                            firstRowY + 3 * Alien.ALIEN_HEIGHT + 3 * ySpacing),
+                    new Vector2D(1, 0), 5);
+            gameObjects.add(alien1);
+            gameObjects.add(alien2);
+            gameObjects.add(alien3);
+        }
+    }
+
+    /**
+     * Creates game objects for hard difficulty.
+     */
+    public void createHardObjects() {
+        int xSpacing = 20;
+        int ySpacing = 10;
+        int firstRowY = 100;
+        for (int i = 0; i < 3; i++) {
+            FastRapidfireAlien alien1 = new FastRapidfireAlien(
+                    new Vector2D(100 + i * FastRapidfireAlien.FAST_RAPIDFIRE_ALIEN_WIDTH + xSpacing, firstRowY),
+                    new Vector2D(1, 0), 5);
+            WideAlien alien2 = new WideAlien(
+                    new Vector2D(100 + i * WideAlien.WIDE_ALIEN_WIDTH + xSpacing,
+                            firstRowY + Alien.ALIEN_HEIGHT + ySpacing),
+                    new Vector2D(1, 0), 5);
+            NormalAlien alien3 = new NormalAlien(
+                    new Vector2D(100 + i * NormalAlien.NORMAL_ALIEN_WIDTH + xSpacing,
+                            firstRowY + 2 * Alien.ALIEN_HEIGHT + 2 * ySpacing),
+                    new Vector2D(1, 0), 5);
+            RapidfireAlien alien4 = new RapidfireAlien(
+                    new Vector2D(100 + i * RapidfireAlien.RAPIDFIRE_ALIEN_WIDTH + xSpacing,
+                            firstRowY + 3 * Alien.ALIEN_HEIGHT + 3 * ySpacing),
+                    new Vector2D(1, 0), 5);
+
+            gameObjects.add(alien1);
+            gameObjects.add(alien2);
+            gameObjects.add(alien3);
+            gameObjects.add(alien4);
+        }
+    }
+
+    /**
+     * Gets the list of game objects.
+     * 
+     * @return the list of game objects
+     */
+    public List<GameObject> getGameObjects() {
         return gameObjects;
     }
 
+    /**
+     * Adds a game object to the panel.
+     * 
+     * @param object the game object to add
+     */
     public void addGameObject(GameObject object) {
         objectsToAdd.add(object);
     }
 
+    /**
+     * Removes a game object from the panel.
+     * 
+     * @param object the game object to remove
+     */
     public void removeGameObject(GameObject object) {
         objectsToRemove.add(object);
     }
 
+    /**
+     * Gets the health bar.
+     * 
+     * @return the health bar
+     */
     public HealthBar getHealthBar() {
         return healthBar;
+    }
+
+    /**
+     * Gets the game timer.
+     * 
+     * @return the game timer
+     */
+    public GameTimer getGameTimer() {
+        return gameTimer;
+    }
+
+    public void setPlayerHit(boolean playerHit) {
+        this.playerHit = playerHit;
+        if (playerHit) {
+            this.playerHitTimer = 50;
+        }
     }
 }

@@ -1,7 +1,7 @@
 package en.tresz.spaceinvaders.util;
 
 /**
- * A simple 2D vector class for positioning.
+ * 2D vector class for positioning.
  */
 public class Vector2D {
 
@@ -19,18 +19,38 @@ public class Vector2D {
         this.y = y;
     }
 
+    /**
+     * Gets the x coordinate.
+     * 
+     * @return the x coordinate
+     */
     public int getX() {
         return this.x;
     }
 
+    /**
+     * Gets the y coordinate.
+     * 
+     * @return the y coordinate
+     */
     public int getY() {
         return this.y;
     }
 
+    /**
+     * Sets the x coordinate.
+     * 
+     * @param x the new x coordinate
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     * Sets the y coordinate.
+     * 
+     * @param y the new y coordinate
+     */
     public void setY(int y) {
         this.y = y;
     }
@@ -111,15 +131,24 @@ public class Vector2D {
         this.y -= y;
     }
 
+    /**
+     * Negates both coordinates.
+     */
     public void negate() {
         this.x = -this.x;
         this.y = -this.y;
     }
 
+    /**
+     * Negates the x coordinate.
+     */
     public void negateX() {
         this.x = -this.x;
     }
 
+    /**
+     * Negates the y coordinate.
+     */
     public void negateY() {
         this.y = -this.y;
     }

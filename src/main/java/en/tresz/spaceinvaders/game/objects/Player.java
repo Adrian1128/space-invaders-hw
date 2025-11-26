@@ -1,7 +1,7 @@
 package en.tresz.spaceinvaders.game.objects;
 
 import en.tresz.spaceinvaders.game.GamePanel;
-import en.tresz.spaceinvaders.game.projectiles.PlayerProjectile;
+import en.tresz.spaceinvaders.game.objects.projectiles.PlayerProjectile;
 import en.tresz.spaceinvaders.util.ImageLoader;
 import en.tresz.spaceinvaders.util.Vector2D;
 
@@ -10,9 +10,15 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
+/**
+ * Represents the player's spaceship controlled by keyboard input.
+ */
 public class Player extends GameObject {
 
     private BufferedImage playerImage = ImageLoader.loadBufferedImage("/images/spaceship.png");
+
+    private BufferedImage playerNormalImage = ImageLoader.loadBufferedImage("/images/spaceship.png");
+    private BufferedImage playerHitImage = ImageLoader.loadBufferedImage("/images/spaceship-hit.png");
 
     private int currentVelocity = 0;
 
@@ -22,6 +28,14 @@ public class Player extends GameObject {
 
     private int health;
 
+    /**
+     * Constructs a Player with specified parameters.
+     * 
+     * @param position the initial position
+     * @param velocity the movement velocity
+     * @param hitSpeed the shooting speed multiplier
+     * @param health   the initial health
+     */
     public Player(Vector2D position, Vector2D velocity, int hitSpeed, int health) {
         super(position, velocity);
         this.hitSpeed = hitSpeed;
@@ -30,6 +44,11 @@ public class Player extends GameObject {
         height = 73;
     }
 
+    /**
+     * Updates the player position and enforces boundary constraints.
+     * 
+     * @param gamePanel the game panel for boundary checking
+     */
     public void update(GamePanel gamePanel) {
         if (position.getX() - width / 2 < 0)
             position.setX(0 + width / 2);
@@ -38,10 +57,34 @@ public class Player extends GameObject {
         position.setX(position.getX() + currentVelocity);
     }
 
+    /**
+     * Draws the player spaceship.
+     * 
+     * @param g the graphics context
+     */
     public void draw(Graphics g) {
         g.drawImage(playerImage, position.centerX(width), position.centerY(height), width, height, null);
     }
 
+    /**
+     * Draws the player spaceship, showing hit state if applicable.
+     * 
+     * @param g     the graphics context
+     * @param isHit
+     */
+    public void draw(Graphics g, boolean isHit) {
+        if (isHit) {
+            g.drawImage(playerHitImage, position.centerX(width), position.centerY(height), width, height, null);
+        } else {
+            g.drawImage(playerNormalImage, position.centerX(width), position.centerY(height), width, height, null);
+        }
+    }
+
+    /**
+     * Attempts to shoot a projectile upwards.
+     * 
+     * @param gamePanel the game panel to add the projectile to
+     */
     public void shoot(GamePanel gamePanel) {
         if (shootingInterval > 0) {
             shootingInterval -= hitSpeed;
@@ -54,22 +97,32 @@ public class Player extends GameObject {
         shootingInterval = 500;
     }
 
+    /**
+     * Moves the player left.
+     */
     public void moveLeft() {
         currentVelocity = -velocity.getX();
     }
 
+    /**
+     * Moves the player right.
+     */
     public void moveRight() {
         currentVelocity = velocity.getX();
     }
 
+    /**
+     * Stops the player movement.
+     */
     public void stop() {
         currentVelocity = 0;
     }
 
     /**
-     * forrás: https://www.javatips.net/api/javax.swing.inputmap
+     * Sets up keyboard input bindings for player movement using arrow keys.
+     * Source: https://www.javatips.net/api/javax.swing.inputmap
      * 
-     * @param gamePanel
+     * @param gamePanel the game panel to register input bindings on
      */
     public void playerMovement(GamePanel gamePanel) {
         // LEFT pressed
@@ -117,10 +170,20 @@ public class Player extends GameObject {
         });
     }
 
+    /**
+     * Gets the player's current health.
+     * 
+     * @return the health
+     */
     public int getHealth() {
         return health;
     }
 
+    /**
+     * Sets the player's health.
+     * 
+     * @param health the new health value
+     */
     public void setHealth(int health) {
         this.health = health;
     }
