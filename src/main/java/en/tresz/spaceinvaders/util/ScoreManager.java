@@ -40,7 +40,7 @@ public class ScoreManager {
      */
     public ScoreManager() {
     }
-    
+
     /**
      * Adds a score to the leaderboard in order.
      * Updates existing player scores if the new time is better.
@@ -67,10 +67,11 @@ public class ScoreManager {
         }
 
         scores.add(score);
+        orderScores(scores);
 
         if (scores.size() > maxPlacements) {
-            orderScores(scores);
-            scores = scores.subList(0, maxPlacements);
+
+            scores = new ArrayList<>(scores.subList(0, maxPlacements));
         }
 
         saveScores(scores);

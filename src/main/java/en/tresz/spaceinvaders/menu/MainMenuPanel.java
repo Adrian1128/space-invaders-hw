@@ -39,7 +39,7 @@ public class MainMenuPanel extends JPanel {
      */
     public MainMenuPanel(MainWindow gw) {
         gameWindow = gw;
-        backgroundImage = ImageLoader.loadBufferedImage("/images/menu-background.png");
+        backgroundImage = ImageLoader.loadBufferedImage("/images/main-menu-background.png");
 
         initUI();
     }
